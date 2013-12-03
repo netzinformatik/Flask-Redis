@@ -16,7 +16,7 @@ setup(
     name='Flask-Redis',
     version=__version__,
     packages=['flask_redis'],
-    url='',
+    url='https://github.com/netzinformatik/Flask-Redis',
     license='BSD',
     author='Tobias Werner',
     author_email='mail@tobiaswerner.net',
@@ -27,12 +27,24 @@ setup(
     platforms='any',
     install_requires=[
         'Flask',
-        'Redis',
+        'redis',
     ],
     setup_requires=[
         'nose>=1.0',
-        'coverage',
         'mock'
     ],
     test_suite='nose.collector',
+    classifiers=[
+        'Development Status :: 1 - Planning',
+        'Environment :: Web Environment',
+        'Framework :: Flask',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Natural Language :: German',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+
+    ]
 )
