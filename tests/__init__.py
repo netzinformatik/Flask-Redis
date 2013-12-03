@@ -10,7 +10,6 @@
     :license: BSD, see LICENSE for more details.
 """
 import unittest
-import mock
 
 import flask
 
@@ -29,30 +28,13 @@ def create_app(config=dict()):
     return app
 
 
-class RedisTestCase(unittest.TestCase):
+class FlaskRedisTestCase(unittest.TestCase):
+    __config = dict(REDIS_HOST='127.0.0.1', REDIS_DB=5)
 
     def setUp(self):
-        self.app = create_app(dict(REDIS_HOST='127.0.0.1', REDIS_DB=5))
+        self.app = create_app(self.__config)
         self.redis = flask_redis.Redis(self.app)
+        self._setUp()
 
-    def test_app(self):
-        self.assertIsNotNone(self.app)
-
-    def test_redis_connection(self):
-        self.assertIsNotNone(self.redis)
-
-    def test_redis_set(self):
-        with mock.patch('redis.StrictRedis.set', return_value=True) as r_set:
-            with self.app.test_request_context():
-                rv = self.redis.set('foo', 'bar')
-
-            r_set.assert_called_with('foo', 'bar')
-            self.assertTrue(rv)
-
-    def test_redis_get(self):
-        with mock.patch('redis.StrictRedis.get', return_value='baz') as r_get:
-            with self.app.test_request_context():
-                rv = self.redis.get('foo')
-
-            r_get.assert_called_with('foo')
-            self.assertEqual('baz', rv)
+    def _setUp(self):
+        pass

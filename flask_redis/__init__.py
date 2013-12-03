@@ -32,6 +32,10 @@ class Redis(object):
             self.init_app(app)
 
     def init_app(self, app):
+        """
+
+        :type app: flask.Flask
+        """
         app.config.setdefault('REDIS_HOST', 'localhost')
         app.config.setdefault('REDIS_PORT', 6379)
         app.config.setdefault('REDIS_DB', 0)
@@ -42,6 +46,12 @@ class Redis(object):
         app.config.setdefault('REDIS_ERRORS', 'strict')
         app.config.setdefault('REDIS_DECODE_RESPONSES', False)
         app.config.setdefault('REDIS_UNIX_SOCKET_PATH', None)
+
+        app.config.setdefault('REDIS_SESSION', False)
+
+        if app.config.get('REDIS_SESSION'):
+            from session import RedisSessionInterface
+            app.session_interface = RedisSessionInterface(self)
 
     def _connect(self):
         """
