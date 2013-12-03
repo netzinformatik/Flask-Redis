@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 """
     flask.ext.redis
-    ~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~
 
     Utilise Redis in your Flask application
 
@@ -21,6 +21,16 @@ __version__ = '0.1-dev'
 
 
 class Redis(object):
+    """This is the main extension class. Pass your :class:`flask.Flask`
+    instance to the constructor or call :func:`init_app` later when no
+    instance is around at the moment::
+
+        import flask
+        import flask.ext.redis
+
+        app = flask.Flask(__name__)
+        redis = redis.Redis(app)
+    """
     def __init__(self, app=None):
         """
 
@@ -32,7 +42,24 @@ class Redis(object):
             self.init_app(app)
 
     def init_app(self, app):
-        """
+        """Use this method directly when :class:`Redis` was instantiated
+        without an app object::
+
+            import flask
+            import flask.ext.redis
+
+            app = flask.Flask(__name__)
+            redis = redis.Redis()
+
+            redis.init_app(app)
+
+        This method sets the default configuration, expecting a Redis-instance
+        listening on 127.0.0.1:6379 using DB index 0 when not specified
+        differently.
+
+        Additionally applies server-side sessions when REDIS_SESSION is set
+        to True in the configuration. See :mod:`flask.ext.redis.session`
+        for more info.
 
         :type app: flask.Flask
         """
