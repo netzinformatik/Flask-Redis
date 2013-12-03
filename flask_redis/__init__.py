@@ -80,6 +80,17 @@ class Redis(object):
             from session import RedisSessionInterface
             app.session_interface = RedisSessionInterface(self)
 
+        if hasattr(app, 'teardown_appcontext'):
+            app.teardown_appcontext(self._teardown)
+        else:
+            app.teardown_request(self._teardown)
+
+    def _teardown(self, exception):
+        context = connection_stack.top
+        if context is not None:
+            if hasattr(context, 'redis'):
+                context.redis.connection_pool.disconnect()
+
     def _connect(self):
         """
 

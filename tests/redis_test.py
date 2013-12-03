@@ -37,3 +37,13 @@ class RedisTestCase(FlaskRedisTestCase):
 
             r_get.assert_called_with('foo')
             self.assertEqual('baz', rv)
+
+    def test_redis_disconnect(self):
+        with self.app.test_request_context():
+            self.redis.echo('TEST')
+
+            cp = mock.Mock(name='connection_pool')
+            self.redis._connection.connection_pool = cp
+
+            self.app.do_teardown_appcontext()
+            cp.disconnect.assert_called_once_with()
