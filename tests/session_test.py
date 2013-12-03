@@ -9,8 +9,12 @@
     :author: Tobias Werner <mail@tobiaswerner.net>
     :license: BSD, see LICENSE for more details.
 """
-import mock
+
+import datetime
 import cPickle
+
+import mock
+
 from flask_redis.session import RedisSession, RedisSessionInterface
 from tests import FlaskRedisTestCase
 
@@ -107,3 +111,24 @@ class RedisSessionInterfaceTest(FlaskRedisTestCase):
         self.assertEqual('test_A', session['a'])
         self.assertIn('b', session)
         self.assertEqual('test_B', session['b'])
+
+    def test_get_redis_expiration_time(self):
+        self.assertTrue(self.session_object.permanent)
+        lifetime = RedisSessionInterface.get_redis_expiration_time(
+            self.app,
+            self.session_object
+        )
+
+        self.assertIs(self.app.permanent_session_lifetime, lifetime)
+
+    def test_get_redis_expiration_time_not_permanent(self):
+        self.session_object.permanent = False
+        self.assertFalse(self.session_object.permanent)
+
+        lifetime = RedisSessionInterface.get_redis_expiration_time(
+            self.app,
+            self.session_object
+        )
+
+        self.assertIsInstance(lifetime, datetime.timedelta)
+        self.assertEqual(1, lifetime.days)
