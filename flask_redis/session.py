@@ -40,7 +40,7 @@ class RedisSessionInterface(SessionInterface):
     def __init__(self, redis, prefix='session:'):
         """
 
-        :param redis: :class:`redis.Strict`
+        :param redis: :class:`redis.StrictRedis`
         :param prefix: str
         """
         self.redis = redis
