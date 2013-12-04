@@ -20,6 +20,8 @@ from flask.sessions import SessionMixin, SessionInterface
 
 
 class RedisSession(CallbackDict, SessionMixin):
+    """Session data mapping"""
+
     def __init__(self, initial=None, sid=None, new=False):
         def on_update(obj):
             obj.modified = True
@@ -31,23 +33,24 @@ class RedisSession(CallbackDict, SessionMixin):
 
 
 class RedisSessionInterface(SessionInterface):
+    """Session interface for providing redis-based session."""
     __serializer = cPickle
     __session_class = RedisSession
 
     def __init__(self, redis, prefix='session:'):
         """
 
-        :type redis: redis.StrictRedis
-        :type prefix: str
+        :param redis: :class:`redis.Strict`
+        :param prefix: str
         """
         self.redis = redis
         self.prefix = prefix
 
     @staticmethod
     def generate_sid():
-        """
+        """Generates a session ID.
 
-        :rtype: str
+        :returns: str
         """
         return hashlib.sha1(str(uuid.uuid4()) + str(uuid.uuid1())).hexdigest()
 
@@ -55,20 +58,27 @@ class RedisSessionInterface(SessionInterface):
     def get_redis_expiration_time(app, session):
         """
 
+        :param app: :class:`flask.Flask`
         :type app: flask.Flask
-        :type session: RedisSession
-        :rtype: datetime.timedelta
+        :param session: :class:`flask.sessions.SessionMixin`
+        :type session: SessionMixin
+        :returns: :class:`datetime.timedelta`
         """
         if session.permanent:
             return app.permanent_session_lifetime
         return timedelta(days=1)
 
     def open_session(self, app, request):
-        """
+        """Creates an instance of :class:`RedisSession` with corresponding
+        data from the redis instance or a new and empty instance when no data
+        exists. Also creates a new instance with generated ID on spoofed IDs
+        preventing session fixation.
 
+        :param app: :class:`flask.Flask`
         :type app: flask.Flask
+        :param request: :class:`flask.Request`
         :type request: flask.Request
-        :rtype: RedisSession
+        :returns: RedisSession -- instance of :attr:`__session_class`
         """
         sid = request.cookies.get(app.session_cookie_name)
         if not sid or not self.redis.exists(self.prefix + sid + ':data'):
@@ -80,11 +90,16 @@ class RedisSessionInterface(SessionInterface):
         return self.__session_class(data, sid=sid)
 
     def save_session(self, app, session, response):
-        """
+        """Saves session dict to redis and updating expiration time.
+        Additionally deletes cookie when dict was emptied.
 
+        :param app: :class:`flask.Flask`
         :type app: flask.Flask
+        :param session: :class:`RedisSession`
         :type session: RedisSession
+        :param response: :class:`flask.Response`
         :type response: flask.Response
+        :returns: None
         """
         domain = self.get_cookie_domain(app)
         if not session:

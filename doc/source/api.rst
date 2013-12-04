@@ -12,8 +12,6 @@ API
 
 .. autoclass:: RedisSession
    :members:
-   :inherited-members:
 
 .. autoclass:: RedisSessionInterface
    :members:
-   :inherited-members:

@@ -22,7 +22,7 @@ __version__ = '0.1-dev'
 
 class Redis(object):
     """This is the main extension class. Pass your :class:`flask.Flask`
-    instance to the constructor or call :func:`init_app` later when no
+    instance to the constructor or call :meth:`init_app` later when no
     instance is around at the moment::
 
         import flask
@@ -86,6 +86,11 @@ class Redis(object):
             app.teardown_request(self._teardown)
 
     def _teardown(self, exception):
+        """Closes redis connection on application teardown.
+
+        :param exception:
+        :return:
+        """
         context = connection_stack.top
         if context is not None:
             if hasattr(context, 'redis'):
@@ -111,7 +116,8 @@ class Redis(object):
 
     @property
     def _connection(self):
-        """
+        """Calls :meth:`connect` to create a redis instance and stores it
+        to the application context on first use.
 
         :rtype: redis.StrictRedis
         """
@@ -122,4 +128,10 @@ class Redis(object):
             return context.redis
 
     def __getattr__(self, item):
+        """Proxy method for redis instance. Allows us to use `self` as
+        replacement for :class:`redis.StrictRedis`
+
+        :type item:
+        :rtype:
+        """
         return getattr(self._connection, item)
