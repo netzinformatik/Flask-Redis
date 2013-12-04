@@ -61,6 +61,7 @@ class Redis(object):
         to True in the configuration. See :mod:`flask.ext.redis.session`
         for more info.
 
+        :param app: :class:`flask.Flask`
         :type app: flask.Flask
         """
         app.config.setdefault('REDIS_HOST', 'localhost')

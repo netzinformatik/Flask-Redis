@@ -47,3 +47,15 @@ class RedisTestCase(FlaskRedisTestCase):
 
             self.app.do_teardown_appcontext()
             cp.disconnect.assert_called_once_with()
+
+    def test_redis_session_is_used_when_configured(self):
+        from flask_redis.session import RedisSessionInterface
+
+        session_interface = self.app.session_interface
+        self.assertNotIsInstance(session_interface, RedisSessionInterface)
+
+        self.app.config['REDIS_SESSION'] = True
+        self.redis.init_app(self.app)
+
+        session_interface = self.app.session_interface
+        self.assertIsInstance(session_interface, RedisSessionInterface)
